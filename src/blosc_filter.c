@@ -149,6 +149,7 @@ size_t blosc_filter(unsigned flags, size_t cd_nelmts,
 
   void* outbuf = NULL;
   int status = 0;                /* Return code from Blosc routines */
+  size_t format_version;
   size_t typesize;
   size_t outbuf_size;
   int clevel = 5;                /* Compression level default */
@@ -160,6 +161,12 @@ size_t blosc_filter(unsigned flags, size_t cd_nelmts,
   char errmsg[256];
 
   /* Filter params that are always set */
+  format_version = cd_values[1];
+  if (format_version > BLOSC_VERSION_FORMAT) {
+    PUSH_ERR("blosc_filter", H5E_CALLBACK,
+             "Blosc format not supported by this version of the Blosc library.");
+    goto failed;
+  }
   typesize = cd_values[2];      /* The datatype size */
   outbuf_size = cd_values[3];   /* Precomputed buffer guess */
   /* Optional params */
